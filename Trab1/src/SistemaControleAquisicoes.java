@@ -102,6 +102,29 @@ public class SistemaControleAquisicoes {
             System.out.println(pedido);
         }
     }
+    public void excluirPedido(int idPedido) {  // Método para excluir pedido
+        if (usuarioAtual == null) {
+            System.out.println("Usuário não logado.");
+            return;
+        }
+    
+        for (PedidoAquisicao pedido : pedidos) {
+            if (pedido.getId() == idPedido) {
+                if (!pedido.getSolicitante().getId().equals(usuarioAtual.getId())) {
+                    System.out.println("Somente o funcionário que criou o pedido pode excluí-lo.");
+                    return;
+                }
+                if (pedido.getStatus() != StatusPedido.ABERTO) {
+                    System.out.println("Pedido já foi avaliado e não pode ser excluído.");
+                    return;
+                }
+                pedidos.remove(pedido);
+                System.out.println("Pedido excluído com sucesso.");
+                return;
+            }
+        }
+        System.out.println("Pedido não encontrado.");
+    }
 
     @Override
     public String toString() {
