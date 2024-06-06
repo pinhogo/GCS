@@ -1,3 +1,6 @@
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Menu {
@@ -17,6 +20,9 @@ public class Menu {
             System.out.println("1. Adicionar Usuário");
             System.out.println("2. Logar Usuário");
             System.out.println("3. Registrar Pedido");
+            System.out.println("4. Aprovar Pedido");
+            System.out.println("5. Listar Pedidos entre Datas");
+            System.out.println("6. Buscar Pedidos por Funcionário");
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
             try {
@@ -35,6 +41,18 @@ public class Menu {
                     break;
                 case 3:
                     registrarPedido();
+                    break;
+                case 4:
+                    avaliarPedido();
+                    break;
+                case 5:
+                    listarPedidosEntreDatas();
+                    break;
+                case 6:
+                    buscarPedidosPorFuncionario();
+                    break;
+                case 7:
+                    sistema.getFuncionarios();
                     break;
                 case 0:
                     System.out.println("Saindo...");
@@ -149,7 +167,73 @@ public class Menu {
         Item item = new Item(nomeItem, valorItem, qnt);
         sistema.registrarPedido(item);
     }
-    
+
+    private void avaliarPedido() {
+        System.out.print("ID do pedido: ");
+        int idPedido = 0;
+        boolean valido = false;
+        while (!valido) {
+            try {
+                idPedido = Integer.parseInt(scanner.nextLine());
+                valido = true;
+            } catch (NumberFormatException e) {
+                System.out.println("ID inválido. Por favor, digite um número.");
+            }
+        }
+
+        System.out.print("Aprovar pedido? (true/false): ");
+        boolean aprovado = false;
+        valido = false;
+        while (!valido) {
+            try {
+                aprovado = Boolean.parseBoolean(scanner.nextLine());
+                valido = true;
+            } catch (Exception e) {
+                System.out.println("Entrada inválida. Por favor, digite true ou false.");
+            }
+        }
+        sistema.avaliarPedido(idPedido, aprovado);
+    }
+
+    private void listarPedidosEntreDatas() {
+        System.out.print("Data de início (dd/MM/yyyy): ");
+        Date dataInicio = null;
+        boolean valido = false;
+        while (!valido) {
+            dataInicio = parseDate(scanner.nextLine());
+            if (dataInicio != null) {
+                valido = true;
+            }
+        }
+
+        System.out.print("Data de fim (dd/MM/yyyy): ");
+        Date dataFim = null;
+        valido = false;
+        while (!valido) {
+            dataFim = parseDate(scanner.nextLine());
+            if (dataFim != null) {
+                valido = true;
+            }
+        }
+
+        sistema.listarPedidosEntreDatas(dataInicio, dataFim);
+    }
+
+    private void buscarPedidosPorFuncionario() {
+        System.out.print("ID do funcionário: ");
+        String idFuncionario = scanner.nextLine();
+        sistema.buscarPedidosPorFuncionario(idFuncionario);
+    }
+
+    private Date parseDate(String dateStr) {
+        try {
+            return new SimpleDateFormat("dd/MM/yyyy").parse(dateStr);
+        } catch (ParseException e) {
+            System.out.println("Data inválida. Tente novamente.");
+            return null;
+        }
+    }
+
     public static void main(String[] args) {
         Menu menu = new Menu();
         menu.exibirMenu();
