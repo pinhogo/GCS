@@ -50,7 +50,7 @@ public class User {
             ", nome='" + getNome() + "'" +
             ", tipo='" + getTipo() + "'" +
             ", departamento='" + getDepartamento() + "'" +
-            "}";
+            "}" + "\n";
     }
 }
 

@@ -1,5 +1,5 @@
 public enum Departamento {
-    FINANCEIRO(10000),
+    FINANCEIRO(100000),
     RH(5000),
     ENGENHARIA(20000),
     MANUTENCAO(8000),

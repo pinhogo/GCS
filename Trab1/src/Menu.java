@@ -23,6 +23,8 @@ public class Menu {
             System.out.println("4. Aprovar Pedido");
             System.out.println("5. Listar Pedidos entre Datas");
             System.out.println("6. Buscar Pedidos por Funcionário");
+            System.out.println("7. Listar Funcionários");
+            System.out.println("8. Excluir Pedido");
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
             try {
@@ -52,7 +54,10 @@ public class Menu {
                     buscarPedidosPorFuncionario();
                     break;
                 case 7:
-                    sistema.getFuncionarios();
+                    System.out.print(sistema.getFuncionarios());
+                    break;
+                case 8:
+                    excluirPedido();
                     break;
                 case 0:
                     System.out.println("Saindo...");
@@ -61,6 +66,21 @@ public class Menu {
                     System.out.println("Opção inválida. Tente novamente.");
             }
         }
+    }
+ 
+    private void excluirPedido(){
+        System.out.print("ID do pedido: ");
+        int idPedido = 0;
+        boolean valido = false;
+        while (!valido) {
+            try {
+                idPedido = Integer.parseInt(scanner.nextLine());
+                valido = true;
+            } catch (NumberFormatException e) {
+                System.out.println("ID inválido. Por favor, digite um número.");
+            }
+        }
+        sistema.excluirPedido(idPedido);
     }
 
     private void adicionarUsuario() {
@@ -73,7 +93,7 @@ public class Menu {
 
         User usuario = new User(id, nome, tipo, departamento);
         sistema.adicionarUsuario(usuario);
-        System.out.println("Usuário adicionado com sucesso.");
+        System.out.println(sistema.getFuncionarios());
     }
 
     private TipoUsuario selecionarTipoUsuario() {
@@ -195,7 +215,7 @@ public class Menu {
         sistema.avaliarPedido(idPedido, aprovado);
     }
 
-    private void listarPedidosEntreDatas() {
+    private void listarPedidosEntreDatas() { //  5. Listar Pedidos entre Datas
         System.out.print("Data de início (dd/MM/yyyy): ");
         Date dataInicio = null;
         boolean valido = false;
@@ -225,7 +245,7 @@ public class Menu {
         sistema.buscarPedidosPorFuncionario(idFuncionario);
     }
 
-    private Date parseDate(String dateStr) {
+    private Date parseDate(String dateStr) {  // converte string do user p/ data
         try {
             return new SimpleDateFormat("dd/MM/yyyy").parse(dateStr);
         } catch (ParseException e) {
