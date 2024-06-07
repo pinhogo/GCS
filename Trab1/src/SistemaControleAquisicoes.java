@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,8 +27,27 @@ public class SistemaControleAquisicoes {
         this.pedidos = pedidos;
     }
 
-    private void inicializarDados() {
-        // Inicializar dados de usuários e pedidos
+    public void inicializarDados() {
+        funcionarios.add(new User("1", "Pedro", TipoUsuario.ADMINISTRADOR, Departamento.FINANCEIRO));
+        funcionarios.add(new User("2", "Maria", TipoUsuario.FUNCIONARIO, Departamento.RH));
+        funcionarios.add(new User("3", "João", TipoUsuario.FUNCIONARIO, Departamento.MARKETING));
+        funcionarios.add(new User("4", "José", TipoUsuario.FUNCIONARIO, Departamento.ENGENHARIA));
+        funcionarios.add(new User("5", "Ana", TipoUsuario.FUNCIONARIO, Departamento.FINANCEIRO));
+        funcionarios.add(new User("6", "Carlos", TipoUsuario.FUNCIONARIO, Departamento.RH));
+        funcionarios.add(new User("7", "Beatriz", TipoUsuario.FUNCIONARIO, Departamento.MARKETING));
+        funcionarios.add(new User("8", "Lucas", TipoUsuario.FUNCIONARIO, Departamento.ENGENHARIA));
+        funcionarios.add(new User("9", "Fernanda", TipoUsuario.FUNCIONARIO, Departamento.FINANCEIRO));
+        funcionarios.add(new User("10", "Pedro", TipoUsuario.FUNCIONARIO, Departamento.RH));
+        funcionarios.add(new User("11", "Mariana", TipoUsuario.FUNCIONARIO, Departamento.MARKETING));
+        funcionarios.add(new User("12", "Ricardo", TipoUsuario.FUNCIONARIO, Departamento.MANUTENCAO));
+        funcionarios.add(new User("13", "Sofia", TipoUsuario.FUNCIONARIO, Departamento.FINANCEIRO));
+        funcionarios.add(new User("14", "Henrique", TipoUsuario.FUNCIONARIO, Departamento.RH));
+        funcionarios.add(new User("15", "Gabriela", TipoUsuario.FUNCIONARIO, Departamento.MARKETING)); 
+
+        Item item1 = new Item("Computador", 3000, 2);
+        Item item2 = new Item("Impressora", 500, 3);
+        pedidos.add(new PedidoAquisicao(funcionarios.get(1), item1));
+        pedidos.add(new PedidoAquisicao(funcionarios.get(1), item2));
     }
 
     public void adicionarUsuario(User usuario) {
@@ -84,14 +104,35 @@ public class SistemaControleAquisicoes {
     }
 
     public void listarPedidosEntreDatas(Date dataInicio, Date dataFim) {
-        List<PedidoAquisicao> pedidosFiltrados = pedidos.stream()
-                .filter(p -> !p.getDataPedido().before(dataInicio) && !p.getDataPedido().after(dataFim))
-                .collect(Collectors.toList());
 
+        Date startDate = truncateTime(dataInicio);
+        Date endDate = truncateTime(dataFim);
+    
+        System.out.println("Data de Início: " + startDate);
+        System.out.println("Data de Fim: " + endDate);
+    
+        List<PedidoAquisicao> pedidosFiltrados = pedidos.stream()
+                .filter(p -> {
+                    Date dataPedido = truncateTime(p.getDataPedido());
+                    System.out.println("Verificando pedido com data: " + dataPedido);
+                    return !dataPedido.before(startDate) && !dataPedido.after(endDate);
+                })
+                .collect(Collectors.toList());
+    
         for (PedidoAquisicao pedido : pedidosFiltrados) {
             System.out.println(pedido);
         }
     }
+
+    private Date truncateTime(Date date) { //ignorar a parte de tempo da data
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(date);
+    cal.set(Calendar.HOUR_OF_DAY, 0);
+    cal.set(Calendar.MINUTE, 0);
+    cal.set(Calendar.SECOND, 0);
+    cal.set(Calendar.MILLISECOND, 0);
+    return cal.getTime();
+}
 
     public void buscarPedidosPorFuncionario(String idFuncionario) {
         List<PedidoAquisicao> pedidosFuncionario = pedidos.stream()
