@@ -2,6 +2,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.List;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 public class Menu {
     private SistemaControleAquisicoes sistema;
@@ -21,7 +25,7 @@ public class Menu {
             System.out.println("2. Logar Usuário");
             System.out.println("3. Registrar Pedido");
             System.out.println("4. Aprovar Pedido");
-            System.out.println("5. Listar Pedidos entre Datas");
+            System.out.println("5. Gerenciamento de Pedidos");
             System.out.println("6. Buscar Pedidos por Funcionário");
             System.out.println("7. Listar Funcionários");
             System.out.println("8. Excluir Pedido");
@@ -48,7 +52,7 @@ public class Menu {
                     avaliarPedido();
                     break;
                 case 5:
-                    listarPedidosEntreDatas();
+                    gerenciamentoDePedidos();
                     break;
                 case 6:
                     buscarPedidosPorFuncionario();
@@ -67,7 +71,7 @@ public class Menu {
             }
         }
     }
- 
+
     private void excluirPedido(){
         System.out.print("ID do pedido: ");
         int idPedido = 0;
@@ -215,7 +219,90 @@ public class Menu {
         sistema.avaliarPedido(idPedido, aprovado);
     }
 
-    private void listarPedidosEntreDatas() { //  5. Listar Pedidos entre Datas
+    private void gerenciamentoDePedidos() {
+        int opcao = -1;
+
+        while (opcao != 0) {
+            System.out.println("Gerenciamento de Pedidos:");
+            System.out.println("1. Número de pedidos total");
+            System.out.println("2. Número de pedidos nos últimos 30");
+            System.out.println("3. Pedido de aquisição de maior valor");
+            System.out.println("4. Listar Pedidos entre Datas");
+            System.out.println("0. Voltar");
+            System.out.print("Escolha uma opção: ");
+            try {
+                opcao = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Opção inválida. Por favor, digite um número.");
+                continue;
+            }
+
+            switch (opcao) {
+                case 1:
+                    numeroPedidosAprovadosReprovados();
+                    break;
+                case 2:
+                    pedidosUltimos30Dias();
+                    break;
+                case 3:
+                    pedidoMaiorValorAberto();
+                    break;
+                case 4:
+                    listarPedidosEntreDatas();
+                    break;
+                case 0:
+                    System.out.println("Voltando ao menu principal...");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+            }
+        }
+    }
+
+    @SuppressWarnings("unlikely-arg-type")
+    private void numeroPedidosAprovadosReprovados() {
+        List<PedidoAquisicao> pedidos = sistema.getPedidos();
+        long totalPedidos = pedidos.size();
+        long aprovados = pedidos.stream().filter(p -> p.getStatus().equals("true")).count();
+        long reprovados = pedidos.stream().filter(p -> p.getStatus().equals("false")).count();
+
+        System.out.println("Total de pedidos: " + totalPedidos);
+        System.out.println("Aprovados: " + aprovados + " (" + (100.0 * aprovados / totalPedidos) + "%)");
+        System.out.println("Reprovados: " + reprovados + " (" + (100.0 * reprovados / totalPedidos) + "%)");
+    }
+
+    private void pedidosUltimos30Dias() {
+        List<PedidoAquisicao> pedidos = sistema.getPedidos();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -30);
+        Date dataLimite = calendar.getTime();
+
+        List<PedidoAquisicao> ultimos30Dias = pedidos.stream()
+                .filter(p -> p. getDataPedido().after(dataLimite))
+                .collect(Collectors.toList());
+
+        double valorTotal = ultimos30Dias.stream().mapToDouble(PedidoAquisicao::getValorTotal).sum();
+        double valorMedio = ultimos30Dias.size() > 0 ? valorTotal / ultimos30Dias.size() : 0;
+
+        System.out.println("Número de pedidos nos últimos 30 dias: " + ultimos30Dias.size());
+        System.out.println("Valor médio dos pedidos nos últimos 30 dias: " + valorMedio);
+    }
+
+    private void pedidoMaiorValorAberto() {
+        List<PedidoAquisicao> pedidos = sistema.getPedidos();
+        PedidoAquisicao maiorPedidoAberto = pedidos.stream()
+                .filter(p -> p.getStatus().equals("Aberto"))
+                .max(Comparator.comparingDouble(PedidoAquisicao::getValorTotal))
+                .orElse(null);
+
+        if (maiorPedidoAberto != null) {
+            System.out.println("Pedido de maior valor ainda aberto: " + maiorPedidoAberto);
+        } else {
+            System.out.println("Não há pedidos abertos.");
+        }
+    }
+
+    private void listarPedidosEntreDatas() {
         System.out.print("Data de início (dd/MM/yyyy): ");
         Date dataInicio = null;
         boolean valido = false;
@@ -245,7 +332,7 @@ public class Menu {
         sistema.buscarPedidosPorFuncionario(idFuncionario);
     }
 
-    private Date parseDate(String dateStr) {  // converte string do user p/ data
+    private Date parseDate(String dateStr) {
         try {
             return new SimpleDateFormat("dd/MM/yyyy").parse(dateStr);
         } catch (ParseException e) {
