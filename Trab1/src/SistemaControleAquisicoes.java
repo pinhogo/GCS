@@ -204,6 +204,7 @@ public class SistemaControleAquisicoes {
 
     public void numeroPedidosAprovadosReprovados() {  // Método para contar o número de pedidos aprovados e reprovados
 
+        if (usuarioAtual != null && usuarioAtual.getTipo() == TipoUsuario.ADMINISTRADOR) {
         List<PedidoAquisicao> pedidos = getPedidos();
         long totalPedidos = pedidos.size();
         long aprovados = pedidos.stream().filter(p -> p.getStatus() == StatusPedido.APROVADO).count();
@@ -214,9 +215,12 @@ public class SistemaControleAquisicoes {
         System.out.println("Abertos: " + abertos + " (" + (totalPedidos > 0 ? 100.0 * abertos / totalPedidos : 0) + "%)");
         System.out.println("Aprovados: " + aprovados + " (" + (totalPedidos > 0 ? 100.0 * aprovados / totalPedidos : 0) + "%)");
         System.out.println("Reprovados: " + reprovados + " (" + (totalPedidos > 0 ? 100.0 * reprovados / totalPedidos : 0) + "%)");
+    } else {
+        System.out.println("Usuário não autorizado.");}
     }
 
     public void pedidosUltimos30Dias() { // Método para calcular o número de pedidos e o valor médio dos pedidos nos últimos 30 dias
+        if (usuarioAtual != null && usuarioAtual.getTipo() == TipoUsuario.ADMINISTRADOR) {
         List<PedidoAquisicao> pedidos = getPedidos();
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -30);
@@ -231,9 +235,12 @@ public class SistemaControleAquisicoes {
 
         System.out.println("Número de pedidos nos últimos 30 dias: " + ultimos30Dias.size());
         System.out.println("Valor médio dos pedidos nos últimos 30 dias: " + valorMedio);
+    } else {
+        System.out.println("Usuário não autorizado.");}
     }
 
     public void pedidoMaiorValorAberto() { // Método para encontrar o pedido de maior valor ainda aberto
+        if (usuarioAtual != null && usuarioAtual.getTipo() == TipoUsuario.ADMINISTRADOR) {
         List<PedidoAquisicao> pedidos = getPedidos();
         PedidoAquisicao maiorPedidoAberto = pedidos.stream()
                 .filter(p -> p.getStatus() == StatusPedido.ABERTO)
@@ -245,16 +252,25 @@ public class SistemaControleAquisicoes {
         } else {
             System.out.println("Não há pedidos abertos.");
         }
+    } else {
+        System.out.println("Usuário não autorizado.");}
     }
 
     public List<PedidoAquisicao> buscarPedidosPorDescricaoItem(String descricao) {
+        if (usuarioAtual != null && usuarioAtual.getTipo() == TipoUsuario.ADMINISTRADOR) {
         List<PedidoAquisicao> pedidosFiltrados = pedidos.stream()
                 .filter(p -> p.getItens().stream().anyMatch(item -> item.getDescricao().equalsIgnoreCase(descricao)))
                 .collect(Collectors.toList());
-    
+            
         return pedidosFiltrados;
+
+    } else {
+        System.out.println("Usuário não autorizado.");
+        return new ArrayList<>();
     }
-    
+    }
+
+
     
     @Override
     public String toString() {

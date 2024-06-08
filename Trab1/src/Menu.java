@@ -1,6 +1,7 @@
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
@@ -221,7 +222,8 @@ public class Menu {
             System.out.println("3. Pedido de aquisição de maior valor");
             System.out.println("4. Listar Pedidos entre Datas");
             System.out.println("5. Listar Pedidos por Descrição de Item"); // adicionar
-            System.out.println("6. Buscar Pedidos por Funcionário");
+            System.out.println("6. Avaliar pedido");
+            System.out.println("7. Buscar Pedidos por Funcionário");
             System.out.println("0. Voltar");
             System.out.print("Escolha uma opção: ");
             try {
@@ -245,9 +247,12 @@ public class Menu {
                     listarPedidosEntreDatas();
                     break;
                 case 5:
-                    avaliarPedido();
+                    buscarPedidosPorDescricaoItem();
                     break;
                 case 6:
+                    avaliarPedido();
+                    break;
+                case 7:
                     buscarPedidosPorFuncionario();
                     break;
                 case 0:
@@ -293,6 +298,20 @@ public class Menu {
         } catch (ParseException e) {
             System.out.println("Data inválida. Tente novamente.");
             return null;
+        }
+    }
+
+    private void buscarPedidosPorDescricaoItem() {
+        System.out.print("Digite a descrição do item: ");
+        String descricao = scanner.nextLine();
+        List<PedidoAquisicao> pedidos = sistema.buscarPedidosPorDescricaoItem(descricao);
+    
+        for (PedidoAquisicao pedido : pedidos) {
+            System.out.println(pedido);
+        }
+    
+        if (pedidos.isEmpty()) {
+            System.out.println("Nenhum pedido encontrado com a descrição: " + descricao);
         }
     }
 
