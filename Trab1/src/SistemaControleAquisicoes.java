@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ public class SistemaControleAquisicoes {
         this.pedidos = pedidos;
     }
 
-    public void inicializarDados() {
+    public void inicializarDados() { // Método para inicializar os dados de demonstração
         funcionarios.add(new User("1", "Pedro", TipoUsuario.ADMINISTRADOR, Departamento.FINANCEIRO));
         funcionarios.add(new User("2", "Maria", TipoUsuario.FUNCIONARIO, Departamento.RH));
         funcionarios.add(new User("3", "João", TipoUsuario.FUNCIONARIO, Departamento.MARKETING));
@@ -46,8 +47,35 @@ public class SistemaControleAquisicoes {
 
         Item item1 = new Item("Computador", 3000, 2);
         Item item2 = new Item("Impressora", 500, 3);
+        Item item3 = new Item("Mouse", 50, 10);
+        Item item4 = new Item("Teclado", 100, 5);
+        Item item5 = new Item("Monitor", 700, 3);
+        Item item6 = new Item("Cadeira", 150, 7);
+        Item item7 = new Item("Mesa", 300, 2);
+        Item item8 = new Item("Notebook", 2500, 4);
+        Item item9 = new Item("Headset", 150, 6);
+        Item item10 = new Item("Webcam", 80, 5);
+        Item item11 = new Item("Microfone", 120, 3);
+        Item item12 = new Item("Roteador", 200, 2);
+        Item item13 = new Item("Cabo HDMI", 30, 10);
+        Item item14 = new Item("Pendrive", 20, 15);
+        Item item15 = new Item("HD Externo", 400, 4);
+
         pedidos.add(new PedidoAquisicao(funcionarios.get(1), item1));
         pedidos.add(new PedidoAquisicao(funcionarios.get(1), item2));
+        pedidos.add(new PedidoAquisicao(funcionarios.get(2), item3));
+        pedidos.add(new PedidoAquisicao(funcionarios.get(2), item4));
+        pedidos.add(new PedidoAquisicao(funcionarios.get(3), item5));
+        pedidos.add(new PedidoAquisicao(funcionarios.get(3), item6));
+        pedidos.add(new PedidoAquisicao(funcionarios.get(4), item7));
+        pedidos.add(new PedidoAquisicao(funcionarios.get(4), item8));
+        pedidos.add(new PedidoAquisicao(funcionarios.get(5), item9));
+        pedidos.add(new PedidoAquisicao(funcionarios.get(5), item10));
+        pedidos.add(new PedidoAquisicao(funcionarios.get(6), item11));
+        pedidos.add(new PedidoAquisicao(funcionarios.get(6), item12));
+        pedidos.add(new PedidoAquisicao(funcionarios.get(7), item13));
+        pedidos.add(new PedidoAquisicao(funcionarios.get(7), item14));
+        pedidos.add(new PedidoAquisicao(funcionarios.get(8), item15));
     }
 
     public void adicionarUsuario(User usuario) {
@@ -104,37 +132,41 @@ public class SistemaControleAquisicoes {
     }
 
     public void listarPedidosEntreDatas(Date dataInicio, Date dataFim) {
+        if (usuarioAtual != null && usuarioAtual.getTipo() == TipoUsuario.ADMINISTRADOR) {
+            Date startDate = truncateTime(dataInicio);
+            Date endDate = truncateTime(dataFim);
 
-        Date startDate = truncateTime(dataInicio);
-        Date endDate = truncateTime(dataFim);
-    
-        System.out.println("Data de Início: " + startDate);
-        System.out.println("Data de Fim: " + endDate);
-    
-        List<PedidoAquisicao> pedidosFiltrados = pedidos.stream()
-                .filter(p -> {
-                    Date dataPedido = truncateTime(p.getDataPedido());
-                    System.out.println("Verificando pedido com data: " + dataPedido);
-                    return !dataPedido.before(startDate) && !dataPedido.after(endDate);
-                })
-                .collect(Collectors.toList());
-    
-        for (PedidoAquisicao pedido : pedidosFiltrados) {
-            System.out.println(pedido);
+            System.out.println("Data de Início: " + startDate);
+            System.out.println("Data de Fim: " + endDate);
+
+            List<PedidoAquisicao> pedidosFiltrados = pedidos.stream()
+                    .filter(p -> {
+                        Date dataPedido = truncateTime(p.getDataPedido());
+                        System.out.println("Verificando pedido com data: " + dataPedido);
+                        return !dataPedido.before(startDate) && !dataPedido.after(endDate);
+                    })
+                    .collect(Collectors.toList());
+
+            for (PedidoAquisicao pedido : pedidosFiltrados) {
+                System.out.println(pedido);
+            }
+        } else {
+            System.out.println("Usuário não autorizado.");
         }
     }
 
-    private Date truncateTime(Date date) { //ignorar a parte de tempo da data
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(date);
-    cal.set(Calendar.HOUR_OF_DAY, 0);
-    cal.set(Calendar.MINUTE, 0);
-    cal.set(Calendar.SECOND, 0);
-    cal.set(Calendar.MILLISECOND, 0);
-    return cal.getTime();
-}
+    private Date truncateTime(Date date) { // ignorar a parte de tempo da data
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
 
     public void buscarPedidosPorFuncionario(String idFuncionario) {
+    if (usuarioAtual != null && usuarioAtual.getTipo() == TipoUsuario.ADMINISTRADOR) {
         List<PedidoAquisicao> pedidosFuncionario = pedidos.stream()
                 .filter(p -> p.getSolicitante().getId().equals(idFuncionario))
                 .collect(Collectors.toList());
@@ -142,7 +174,10 @@ public class SistemaControleAquisicoes {
         for (PedidoAquisicao pedido : pedidosFuncionario) {
             System.out.println(pedido);
         }
+    } else {
+        System.out.println("Usuário não autorizado.");
     }
+}
     public void excluirPedido(int idPedido) {  // Método para excluir pedido
         if (usuarioAtual == null) {
             System.out.println("Usuário não logado.");
@@ -167,6 +202,60 @@ public class SistemaControleAquisicoes {
         System.out.println("Pedido não encontrado.");
     }
 
+    public void numeroPedidosAprovadosReprovados() {  // Método para contar o número de pedidos aprovados e reprovados
+
+        List<PedidoAquisicao> pedidos = getPedidos();
+        long totalPedidos = pedidos.size();
+        long aprovados = pedidos.stream().filter(p -> p.getStatus() == StatusPedido.APROVADO).count();
+        long reprovados = pedidos.stream().filter(p -> p.getStatus() == StatusPedido.REPROVADO).count();
+        long abertos = pedidos.stream().filter(p -> p.getStatus() == StatusPedido.ABERTO).count();
+
+        System.out.println("Total de pedidos: " + totalPedidos);
+        System.out.println("Abertos: " + abertos + " (" + (totalPedidos > 0 ? 100.0 * abertos / totalPedidos : 0) + "%)");
+        System.out.println("Aprovados: " + aprovados + " (" + (totalPedidos > 0 ? 100.0 * aprovados / totalPedidos : 0) + "%)");
+        System.out.println("Reprovados: " + reprovados + " (" + (totalPedidos > 0 ? 100.0 * reprovados / totalPedidos : 0) + "%)");
+    }
+
+    public void pedidosUltimos30Dias() { // Método para calcular o número de pedidos e o valor médio dos pedidos nos últimos 30 dias
+        List<PedidoAquisicao> pedidos = getPedidos();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -30);
+        Date dataLimite = truncateTime(calendar.getTime());
+
+        List<PedidoAquisicao> ultimos30Dias = pedidos.stream()
+                .filter(p -> truncateTime(p.getDataPedido()).after(dataLimite))
+                .collect(Collectors.toList());
+
+        double valorTotal = ultimos30Dias.stream().mapToDouble(PedidoAquisicao::getValorTotal).sum();
+        double valorMedio = ultimos30Dias.size() > 0 ? valorTotal / ultimos30Dias.size() : 0;
+
+        System.out.println("Número de pedidos nos últimos 30 dias: " + ultimos30Dias.size());
+        System.out.println("Valor médio dos pedidos nos últimos 30 dias: " + valorMedio);
+    }
+
+    public void pedidoMaiorValorAberto() { // Método para encontrar o pedido de maior valor ainda aberto
+        List<PedidoAquisicao> pedidos = getPedidos();
+        PedidoAquisicao maiorPedidoAberto = pedidos.stream()
+                .filter(p -> p.getStatus() == StatusPedido.ABERTO)
+                .max(Comparator.comparingDouble(PedidoAquisicao::getValorTotal))
+                .orElse(null);
+
+        if (maiorPedidoAberto != null) {
+            System.out.println("Pedido de maior valor ainda aberto: " + maiorPedidoAberto);
+        } else {
+            System.out.println("Não há pedidos abertos.");
+        }
+    }
+
+    public List<PedidoAquisicao> buscarPedidosPorDescricaoItem(String descricao) {
+        List<PedidoAquisicao> pedidosFiltrados = pedidos.stream()
+                .filter(p -> p.getItens().stream().anyMatch(item -> item.getDescricao().equalsIgnoreCase(descricao)))
+                .collect(Collectors.toList());
+    
+        return pedidosFiltrados;
+    }
+    
+    
     @Override
     public String toString() {
         return "{" +
