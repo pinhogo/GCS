@@ -6,6 +6,7 @@ import java.util.Scanner;
 public class Menu {
     private SistemaControleAquisicoes sistema;
     private Scanner scanner;
+    private double totalPedidos; //salva o total em pedidos
 
     public Menu() {
         sistema = new SistemaControleAquisicoes();
@@ -25,6 +26,7 @@ public class Menu {
             System.out.println("6. Buscar Pedidos por Funcionário");
             System.out.println("7. Listar Funcionários");
             System.out.println("8. Excluir Pedido");
+            System.out.println("9. Valor dos pedidos u/30d dias");
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
             try {
@@ -59,6 +61,9 @@ public class Menu {
                 case 8:
                     excluirPedido();
                     break;
+                case 9:
+                    mostrarTotal();
+                    break;
                 case 0:
                     System.out.println("Saindo...");
                     break;
@@ -68,7 +73,15 @@ public class Menu {
         }
     }
  
-    private void excluirPedido(){
+
+    private void mostrarTotal(){ //soma total dos pedidos;
+        System.out.print("--Valor total pedidos = "+ totalPedidos);
+                    System.out.println();
+                    System.out.println("..");
+                    scanner.nextLine();
+    }
+
+    private void excluirPedido(){//excluirpedido
         System.out.print("ID do pedido: ");
         int idPedido = 0;
         boolean valido = false;
@@ -183,12 +196,12 @@ public class Menu {
                 System.out.println("Quantidade inválida. Por favor, digite um número.");
             }
         }
-
+        totalPedidos = totalPedidos+valorItem*qnt; //faz o total somar
         Item item = new Item(nomeItem, valorItem, qnt);
         sistema.registrarPedido(item);
     }
 
-    private void avaliarPedido() {
+    private void avaliarPedido() { //Avalia Pedido
         System.out.print("ID do pedido: ");
         int idPedido = 0;
         boolean valido = false;
@@ -226,7 +239,7 @@ public class Menu {
             }
         }
 
-        System.out.print("Data de fim (dd/MM/yyyy): ");
+        System.out.print("Data de fim (dd/MM/yyyy): "); //Buscadata
         Date dataFim = null;
         valido = false;
         while (!valido) {
@@ -239,7 +252,7 @@ public class Menu {
         sistema.listarPedidosEntreDatas(dataInicio, dataFim);
     }
 
-    private void buscarPedidosPorFuncionario() {
+    private void buscarPedidosPorFuncionario() { //BuscaF
         System.out.print("ID do funcionário: ");
         String idFuncionario = scanner.nextLine();
         sistema.buscarPedidosPorFuncionario(idFuncionario);

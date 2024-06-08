@@ -4,6 +4,7 @@ public enum Departamento {
     ENGENHARIA(20000),
     MANUTENCAO(8000),
     MARKETING(6000);
+    
 
     private final double limite;
 
