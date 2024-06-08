@@ -1,6 +1,7 @@
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
@@ -16,15 +17,15 @@ public class Menu {
         int opcao = -1;
 
         while (opcao != 0) {
-            System.out.println("Sistema de Controle de Aquisições");
+            System.out.println("-------------------------------------------");
+            System.out.println("|    Sistema de Controle de Aquisições    |");
+            System.out.println("-------------------------------------------");
             System.out.println("1. Adicionar Usuário");
             System.out.println("2. Logar Usuário");
             System.out.println("3. Registrar Pedido");
-            System.out.println("4. Aprovar Pedido");
-            System.out.println("5. Listar Pedidos entre Datas");
-            System.out.println("6. Buscar Pedidos por Funcionário");
-            System.out.println("7. Listar Funcionários");
-            System.out.println("8. Excluir Pedido");
+            System.out.println("4. Gerenciamento de Pedidos(Administrador)");
+            System.out.println("5. Listar Funcionários");
+            System.out.println("6. Excluir Pedido");
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
             try {
@@ -45,18 +46,12 @@ public class Menu {
                     registrarPedido();
                     break;
                 case 4:
-                    avaliarPedido();
+                    gerenciamentoDePedidos();
                     break;
                 case 5:
-                    listarPedidosEntreDatas();
-                    break;
-                case 6:
-                    buscarPedidosPorFuncionario();
-                    break;
-                case 7:
                     System.out.print(sistema.getFuncionarios());
                     break;
-                case 8:
+                case 6:
                     excluirPedido();
                     break;
                 case 0:
@@ -67,7 +62,7 @@ public class Menu {
             }
         }
     }
- 
+
     private void excluirPedido(){
         System.out.print("ID do pedido: ");
         int idPedido = 0;
@@ -215,7 +210,61 @@ public class Menu {
         sistema.avaliarPedido(idPedido, aprovado);
     }
 
-    private void listarPedidosEntreDatas() { //  5. Listar Pedidos entre Datas
+    private void gerenciamentoDePedidos() {
+        int opcao = -1;
+
+        while (opcao != 0) {
+            System.out.println("-------------------------------------------");
+            System.out.println("|         Painel Admnistrador             |");
+            System.out.println("-------------------------------------------");
+            System.out.println("1. Número de pedidos total");
+            System.out.println("2. Número de pedidos nos últimos 30");
+            System.out.println("3. Pedido de aquisição de maior valor");
+            System.out.println("4. Listar Pedidos entre Datas");
+            System.out.println("5. Listar Pedidos por Descrição de Item"); // adicionar
+            System.out.println("6. Avaliar pedido");
+            System.out.println("7. Buscar Pedidos por Funcionário");
+            System.out.println("0. Voltar");
+            System.out.print("Escolha uma opção: ");
+            try {
+                opcao = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Opção inválida. Por favor, digite um número.");
+                continue;
+            }
+
+            switch (opcao) {
+                case 1:
+                    sistema.numeroPedidosAprovadosReprovados();
+                    break;
+                case 2:
+                    sistema.pedidosUltimos30Dias();
+                    break;
+                case 3:
+                    sistema.pedidoMaiorValorAberto();
+                    break;
+                case 4:
+                    listarPedidosEntreDatas();
+                    break;
+                case 5:
+                    buscarPedidosPorDescricaoItem();
+                    break;
+                case 6:
+                    avaliarPedido();
+                    break;
+                case 7:
+                    buscarPedidosPorFuncionario();
+                    break;
+                case 0:
+                    System.out.println("Voltando ao menu principal...");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+            }
+        }
+    }
+
+    private void listarPedidosEntreDatas() {
         System.out.print("Data de início (dd/MM/yyyy): ");
         Date dataInicio = null;
         boolean valido = false;
@@ -225,7 +274,6 @@ public class Menu {
                 valido = true;
             }
         }
-
         System.out.print("Data de fim (dd/MM/yyyy): ");
         Date dataFim = null;
         valido = false;
@@ -235,7 +283,6 @@ public class Menu {
                 valido = true;
             }
         }
-
         sistema.listarPedidosEntreDatas(dataInicio, dataFim);
     }
 
@@ -245,12 +292,26 @@ public class Menu {
         sistema.buscarPedidosPorFuncionario(idFuncionario);
     }
 
-    private Date parseDate(String dateStr) {  // converte string do user p/ data
+    private Date parseDate(String dateStr) {
         try {
             return new SimpleDateFormat("dd/MM/yyyy").parse(dateStr);
         } catch (ParseException e) {
             System.out.println("Data inválida. Tente novamente.");
             return null;
+        }
+    }
+
+    private void buscarPedidosPorDescricaoItem() {
+        System.out.print("Digite a descrição do item: ");
+        String descricao = scanner.nextLine();
+        List<PedidoAquisicao> pedidos = sistema.buscarPedidosPorDescricaoItem(descricao);
+    
+        for (PedidoAquisicao pedido : pedidos) {
+            System.out.println(pedido);
+        }
+    
+        if (pedidos.isEmpty()) {
+            System.out.println("Nenhum pedido encontrado com a descrição: " + descricao);
         }
     }
 
